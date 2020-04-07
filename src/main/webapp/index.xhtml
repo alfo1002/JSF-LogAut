@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <f:event type="preRenderView" listener="#{loginController.verificarSesion()}"  />
+        <title>Sistema de Facturación</title>
+    </h:head>
+    <h:body>
+
+
+        <div style="margin: 0 auto; margin-top: 70px">
+            <center>
+                <h:form>
+                    <p:panel header="Ingreso al Sistema" style="width:300px">
+                        <table border="0">
+                            <tr>
+                                <td>
+                                    <center>
+                                        <p:graphicImage url="resources/img/camaron.png" style="width: 14em" />
+                                    </center>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="ui-g-12 ui-md-4">
+                                        <div class="ui-inputgroup">
+                                            <span class="ui-inputgroup-addon"><i class="fa fa-user" style="font-size: 2em"></i></span>
+                                            <p:inputText placeholder="Username" value="#{loginController.login}" required="true" />      
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="ui-g-12 ui-md-4">
+                                        <div class="ui-inputgroup">
+                                            <span class="ui-inputgroup-addon"><i class="fa fa-lock" style="font-size: 2em"></i></span>
+                                            <p:password placeholder="Clave" value="#{loginController.clave}" required="true" />      
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr style="padding: 25px">
+                                <td>
+                                    <center><p:commandButton value="Ingresar" action="#{loginController.iniciarSesion()}"></p:commandButton></center>
+                                </td>
+                            </tr>
+                        </table>
+                    </p:panel>
+                </h:form>
+            </center>
+        </div>
+
+
+
+    </h:body>
+</html>
+
