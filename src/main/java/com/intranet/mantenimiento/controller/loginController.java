@@ -3,15 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.factura.controller;
+package com.intranet.mantenimiento.controller;
 
-import com.factura.ejb.RolFacadeLocal;
-import com.factura.ejb.UsuarioFacadeLocal;
-import com.factura.entity.Rol;
-import com.factura.entity.Usuario;
+import com.intranet.mantenimiento.ejb.UsuarioFacadeLocal;
+import com.intranet.entity.Usuario;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
@@ -29,8 +25,6 @@ public class loginController implements Serializable{
 
     @EJB
     private UsuarioFacadeLocal usuarioEJB;
-    @EJB
-    private RolFacadeLocal rolEJB;
     
     private String login;
     private String clave;
@@ -50,8 +44,7 @@ public class loginController implements Serializable{
             usu = usuarioEJB.findByCedulax(this.login);
             System.out.println("Datos: " + usu);
             if(usu != null){
-                //Object cod = usu.getCodRol().getId();
-                //Rol rol = rolEJB.find(usu.getCodRol().getId());
+                
                 if(BCrypt.checkpw(this.clave, usu.getClave())){
                     System.out.println("Login Exitoso con Usuario:" + usu.getNombre()+ " " + usu.getApellido() + " y con rol:" +usu.getCodRol().getNombre());
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("usuario", usu);

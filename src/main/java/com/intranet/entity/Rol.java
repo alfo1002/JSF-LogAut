@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.factura.entity;
+package com.intranet.entity;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,7 +18,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -33,13 +32,10 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Rol.findAll", query = "SELECT r FROM Rol r")
     , @NamedQuery(name = "Rol.findById", query = "SELECT r FROM Rol r WHERE r.id = :id")
+    , @NamedQuery(name = "Rol.findByEstado", query = "SELECT r FROM Rol r WHERE r.estado = :estado")
     , @NamedQuery(name = "Rol.findByNombre", query = "SELECT r FROM Rol r WHERE r.nombre = :nombre")
-    , @NamedQuery(name = "Rol.findByUrl", query = "SELECT r FROM Rol r WHERE r.url = :url")
-    , @NamedQuery(name = "Rol.findByEstado", query = "SELECT r FROM Rol r WHERE r.estado = :estado")})
+    , @NamedQuery(name = "Rol.findByUrl", query = "SELECT r FROM Rol r WHERE r.url = :url")})
 public class Rol implements Serializable {
-
-    @OneToMany(mappedBy = "codRol")
-    private List<Modulo> moduloList;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -47,23 +43,19 @@ public class Rol implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 100)
-    @Column(name = "nombre")
-    private String nombre;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 100)
-    @Column(name = "url")
-    private String url;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 1)
+    @Size(max = 255)
     @Column(name = "estado")
     private String estado;
+    @Size(max = 255)
+    @Column(name = "nombre")
+    private String nombre;
+    @Size(max = 255)
+    @Column(name = "url")
+    private String url;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "codRol")
     private List<Usuario> usuarioList;
+    @OneToMany(mappedBy = "codRol")
+    private List<DetRolModulo> detRolModuloList;
 
     public Rol() {
     }
@@ -72,19 +64,20 @@ public class Rol implements Serializable {
         this.id = id;
     }
 
-    public Rol(Integer id, String nombre, String url, String estado) {
-        this.id = id;
-        this.nombre = nombre;
-        this.url = url;
-        this.estado = estado;
-    }
-
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public String getNombre() {
@@ -103,14 +96,6 @@ public class Rol implements Serializable {
         this.url = url;
     }
 
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
-
     @XmlTransient
     public List<Usuario> getUsuarioList() {
         return usuarioList;
@@ -118,6 +103,15 @@ public class Rol implements Serializable {
 
     public void setUsuarioList(List<Usuario> usuarioList) {
         this.usuarioList = usuarioList;
+    }
+
+    @XmlTransient
+    public List<DetRolModulo> getDetRolModuloList() {
+        return detRolModuloList;
+    }
+
+    public void setDetRolModuloList(List<DetRolModulo> detRolModuloList) {
+        this.detRolModuloList = detRolModuloList;
     }
 
     @Override
@@ -142,18 +136,7 @@ public class Rol implements Serializable {
 
     @Override
     public String toString() {
-        return "Rol{" + "id=" + id + ", nombre=" + nombre + ", url=" + url + ", estado=" + estado + '}';
+        return "com.factura.entity.Rol[ id=" + id + " ]";
     }
-
-    @XmlTransient
-    public List<Modulo> getModuloList() {
-        return moduloList;
-    }
-
-    public void setModuloList(List<Modulo> moduloList) {
-        this.moduloList = moduloList;
-    }
-
-    
     
 }

@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.factura.ejb;
+package com.intranet.mantenimiento.ejb;
 
-import com.factura.entity.Usuario;
+import com.intranet.entity.Usuario;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -48,6 +48,25 @@ public class UsuarioFacade extends AbstractFacade<Usuario> implements UsuarioFac
             if(!lista.isEmpty()){
                 usu = lista.get(0);
             }
+            
+        }catch(Exception e){
+            System.out.println("Error:" + e.toString());
+        }        
+        return usu;
+    }
+    
+    @Override
+    public List<Usuario> findAllOrdenados() {
+    
+        em.flush();
+        List<Usuario> usu = null;
+        String consulta;
+        try{
+            consulta = "SELECT u From Usuario u WHERE u.estado = ?1";
+            Query query = em.createQuery(consulta);
+            query.setParameter(1, "A");
+            
+            usu = query.getResultList();
             
         }catch(Exception e){
             System.out.println("Error:" + e.toString());

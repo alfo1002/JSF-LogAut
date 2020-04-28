@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.factura.ejb;
+package com.intranet.mantenimiento.ejb;
 
-import com.factura.entity.Rol;
+import com.intranet.entity.Rol;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -25,6 +25,8 @@ public interface RolFacadeLocal {
     Rol find(Object id);
 
     List<Rol> findAll();
+    
+    List<Rol> findAllActive();
 
     List<Rol> findRange(int[] range);
 

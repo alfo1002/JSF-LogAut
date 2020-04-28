@@ -2,8 +2,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
@@ -11,34 +11,27 @@
         <ui:composition template="./../../template/template.xhtml">
 
             <ui:define name="content">
-
-                <h:form>
-
-                    <p:dataGrid var="modd" value="#{principalController.lista_modulos}" columns="3" layout="grid"
-                                id="cars">
-
-                        <f:facet name="header">
-                            Opciones del Sistema:
-                        </f:facet>
-
-                        <p:panel header="#{modd.nombre}" style="text-align:center" >
-                            <h:panelGrid columns="1" style="width:100%; cursor: pointer" >
-                                <p:commandLink action="#{principalController.redirect(modd.codigo,modd.url)}">
-                                    <p:graphicImage url="#{request.contextPath}/#{modd.img}" style="width: 8em" /> 
-
-                                    <h:outputText value="#{modd.nombre}" />
+                <h1>Módulo Mantenimiento</h1>
+                
+                 <h:form>
+                     <p:dataGrid var="per" value="#{mantenimientoController.lis_permisos}" columns="3" layout="grid">
+                        <p:panel header="#{per.nombre}" style="text-align:center" >
+                            <h:panelGrid columns="1" style="width:100%; cursor: pointer; height: 160px" >
+                                <p:link href="#{per.url}">
+                                    <p:graphicImage url="#{request.contextPath}/#{per.img}" style="width: 8em" /> 
+                                    <br></br>
+                                    <h:outputText value="#{per.descripcion}" />
 
                                     <p:commandLink title="V Detail">
                                         <h:outputText styleClass="pi pi-search" style="margin:0 auto;"/>
                                     </p:commandLink>
-                                </p:commandLink>
+                                </p:link>
                             </h:panelGrid>
                         </p:panel>
 
                     </p:dataGrid>
-
                 </h:form>
-
+                
             </ui:define>
 
         </ui:composition>

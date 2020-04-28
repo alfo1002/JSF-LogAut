@@ -9,9 +9,53 @@
         <h:head>
             <f:facet name="first">
                 <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
-                 <f:event type="preRenderView" listener="#{templateController.verificarSesion()}" />
-        <title>JSF-Factura</title>
+                <f:event type="preRenderView" listener="#{templateController.verificarSesion()}" />
+                <title>JSF-Factura</title>
             </f:facet>
+
+            <script>
+                PrimeFaces.locales['es'] = {
+                    closeText: 'Cerrar',
+                    prevText: 'Anterior',
+                    nextText: 'Siguiente',
+                    monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                    monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                    dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                    dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+                    dayNamesMin: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+                    weekHeader: 'Semana',
+                    firstDay: 1,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: '',
+                    timeOnlyTitle: 'Sólo hora',
+                    timeText: 'Tiempo',
+                    hourText: 'Hora',
+                    minuteText: 'Minuto',
+                    secondText: 'Segundo',
+                    currentText: 'Fecha actual',
+                    ampm: false,
+                    month: 'Mes',
+                    week: 'Semana',
+                    day: 'Día',
+                    allDayText: 'Todo el día'
+                };
+                function focusNextOnEnter(event, next) {
+                    var keyCode = event.which || event.keyCode;
+                    if (keyCode === 13) {
+                        next = PrimeFaces.escapeClientId(next);
+                        var element = $(next);
+                        if (element)
+                        {
+                            element.focus();
+                            element.select();
+                            event.preventDefault();
+                        }
+                    }
+                    return true;
+                }
+            </script>
+
         </h:head>
 
         <h:body>
@@ -19,11 +63,16 @@
             <p:layout fullPage="true">
 
 
-                top
+
                 <p:layoutUnit position="north" size="100" resizable="true" closable="true" collapsible="true">
                     <ui:insert name="top">
                         <h:form>
-                            Header
+                            <!--<p:link href="../principal/principal.xhtml">
+                                <p:graphicImage url="/resources/img/camaron.png"  style="width: 4em"/>
+                            </p:link> -->
+
+                            <h:outputLink value="../principal/principal.xhtml"><img src="../../resources/img/camaron.png" style="width: 3em"/></h:outputLink>
+
                             <div align="right">
                                 <p:commandButton icon="ui-icon-power" actionListener="#{templateController.cerrarSesion()}" action="/index?faces-redirect=true" title="Cerrar Sesión" />
                                 <p:commandButton action="#{templateController.obtenerModulos()}" value="Obtener" />
@@ -34,14 +83,13 @@
 
 
 
-                <p:layoutUnit position="south" size="100" closable="true" collapsible="true">
+                <!--<p:layoutUnit position="south" size="100" closable="true" collapsible="true">
                     <div align="right">
                         Todos los Derechos Reservados - 2020
                     </div>
-                </p:layoutUnit>
+                </p:layoutUnit>-->
 
-
-                <p:layoutUnit position="west"  header="Menú:" collapsible="true"  >
+                <p:layoutUnit position="west"  header="Menú:" collapsible="true" style="font-size: 13px" >
                     <ui:insert name="left">
                         <p:menu model="#{templateController.model}">
                             <!--<p:submenu label="Resources">
@@ -57,10 +105,20 @@
                 </p:layoutUnit>
 
 
+                <!--<p:layoutUnit position="west"  header="Menú:" collapsible="true"  >
+                    <ui:insert name="left">
+                        <p:menu model="#{templateController.model}">
+                    
+                        </p:menu>
+                    </ui:insert>
+                </p:layoutUnit>
+                -->
 
-                <p:layoutUnit position="center" >
+
+
+                <p:layoutUnit position="center" style="font-size: 13px" >
                     <ui:insert name="content">
-                        Welcome to PrimeFaces
+
                     </ui:insert>
                 </p:layoutUnit>
 

@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.factura.ejb;
+package com.intranet.mantenimiento.ejb;
 
-import com.factura.entity.Modulo;
+import com.intranet.entity.Modulo;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -38,20 +38,43 @@ public class ModuloFacade extends AbstractFacade<Modulo> implements ModuloFacade
         String consulta = "";
         try {
             //consulta = "SELECT m From Modulo m WHERE m.codrol = ?1";
-            consulta = "SELECT m From Modulo m WHERE m.codRol.id = ?1 and m.estado = ?2";
+            //select * from private.modulo m, private.det_rol_modulo det, private.rol r
+            //where m.codigo=det.cod_modulo and det.cod_rol=r.id and r.id=1 
+            consulta = "SELECT m From Modulo m, DetRolModulo det, Rol r  "
+                    + " WHERE m.codigo = det.codModulo.codigo "
+                    + " and det.codRol.id = r.id and r.id  = ?1 and r.estado = ?2";
             Query query = em.createQuery(consulta);
             query.setParameter(1, codRolUsu);
             query.setParameter(2, "A");
             lista_modulo = query.getResultList();
-            
+
         } catch (Exception e) {
             System.out.println("Error en facade modulo:" + e.toString());
         }
-        
+
         return lista_modulo;
 
     }
-    
-    
-    
+
+    @Override
+    public Modulo findbyIdActivos(int id) {
+        List<Modulo> lista_modulos = null;
+        Modulo mod = null;
+        try {
+            String consulta = "";
+            consulta = "SELECT m From Modulo m WHERE m.codigo = ?1 and m.estado = ?2";
+            Query query = em.createQuery(consulta);
+            query.setParameter(1, id);
+            query.setParameter(2, "A");
+            lista_modulos = query.getResultList();
+            if(lista_modulos.size() > 0){
+                mod = lista_modulos.get(0);
+            }
+        } catch (Exception e) {
+            System.out.println("Error en buscar modulo por ID:"+ e.toString());
+        }
+
+        return mod;
+    }
+
 }

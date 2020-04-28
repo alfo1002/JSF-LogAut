@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.factura.ejb;
+package com.intranet.mantenimiento.ejb;
 
-import com.factura.entity.Usuario;
+import com.intranet.entity.Usuario;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -31,4 +31,6 @@ public interface UsuarioFacadeLocal {
     int count();
     
     Usuario findByCedulax(String cedula);
+    
+    List<Usuario> findAllOrdenados();
 }

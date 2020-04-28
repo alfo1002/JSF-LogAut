@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.factura.ejb;
+package com.intranet.mantenimiento.ejb;
 
-import com.factura.entity.Modulo;
+import com.intranet.entity.Modulo;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -32,5 +32,6 @@ public interface ModuloFacadeLocal {
     
     List<Modulo> findByCodigoRolUsuario(int codRolUsu);
     
+    Modulo findbyIdActivos(int id);
     
 }

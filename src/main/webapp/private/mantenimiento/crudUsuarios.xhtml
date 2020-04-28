@@ -1,0 +1,264 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <body>
+
+        <ui:composition template="./../../template/template.xhtml">
+
+            <ui:define name="content">
+
+                <h:form id="frmUsuarios">
+                    <p:growl id="msgs" showDetail="true" />
+                    <p:panel id="basic" header="Administración de Usuarios" style="margin-bottom:20px">
+
+                        <h:panelGrid id="pngrid" columns="1" cellpadding="10">
+                            <p:commandButton styleClass="" 
+                                             value="Agregar Usuario" icon="fa fa-plus" update="frmNuevoUsuario"
+                                             actionListener="#{crudUsuariosController.agregarUsuario()}"
+                                             oncomplete="PF('modalNuevoUsuario').show();"/> 
+
+                            <p:dataTable id="dtgeneral" var="lis" value="#{crudUsuariosController.lis_usuarios}" 
+                                         selectionMode="single" 
+                                         resizableColumns="true"
+                                         reflow="true"
+                                         rowKey="#{lis.id}" paginator="true" 
+                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rows="15" emptyMessage="No se encontraron registros."
+                                         currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                         rowsPerPageTemplate="5,10,15"
+                                         paginatorPosition="top">                    
+
+                                <p:column headerText="ID" width="3%" sortBy="#{lis.id}" filterBy="#{lis.id}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.id}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="Cédula" width="7%" sortBy="#{lis.cedula}" filterBy="#{lis.cedula}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.cedula}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="Nombre" width="10%" sortBy="#{lis.nombre}" filterBy="#{lis.nombre}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.nombre}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="Apellido" width="10%" sortBy="#{lis.apellido}" filterBy="#{lis.apellido}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.apellido}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="Rol" width="10%" sortBy="#{lis.codRol.nombre}" filterBy="#{lis.codRol.nombre}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.codRol.nombre}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="Correo" width="11%" sortBy="#{lis.email}"  filterBy="#{lis.email}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.email}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="ESTADO" width="5%" sortBy="#{lis.estado}">
+                                    <center>
+                                        <h:outputText value="#{lis.estado == 'A' ? 'ACTIVO':'INACTIVO'}" 
+                                                      style="#{lis.estado == 'A' ? 'color:darkgreen;':'color:red;'}"/>
+                                    </center>
+                                </p:column>
+
+                                <p:column headerText="Opciones:" width="9%">
+                                    <p:commandButton  icon="fa fa-edit" id="btnEditar"
+                                                      actionListener="#{crudUsuariosController.setUsuario(lis)}"
+                                                      oncomplete="PF('windowsEditar').show();"
+                                                      update=":frmEditar"/> 
+                                    <p:tooltip id="toolEditar" value="Editar" position="top"/>
+
+                                    <p:commandButton  icon="fa fa-list-alt" id="btnPermisos"
+                                                      actionListener="#{crudUsuariosController.cargarPermisos(lis)}"
+                                                      oncomplete="PF('windowsPermisos').show();"
+                                                      update=":frmPermisos"/> 
+                                    <p:tooltip id="toolPermisos" for="btnPermisos" value="Permisos" position="top"/>
+
+                                </p:column>
+
+
+
+                            </p:dataTable>
+
+                        </h:panelGrid>
+                    </p:panel>
+                </h:form>
+
+                <p:dialog header="Nuevo Usuario" widgetVar="modalNuevoUsuario" id="modalNuevoUsuario" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
+                          closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
+                    <h:form id="frmNuevoUsuario">
+                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank" >
+                            <p:outputLabel value="Cédula" for="txtCedula"/>
+                            <p:inputText id="txtCedula" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Cédula" autocomplete="off" value="#{crudUsuariosController.usuario.cedula}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Estado" for="cmbEstado"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{crudUsuariosController.usuario.estado}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="ACTIVO"   itemValue="A" />
+                                <f:selectItem itemLabel="INACTIVO" itemValue="I" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Nombre" for="txtNombre"/>
+                            <p:inputText id="txtNombre" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Nombre" autocomplete="off" value="#{crudUsuariosController.usuario.nombre}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Apellido" for="txtApellido"/>
+                            <p:inputText id="txtApellido" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Apellido" autocomplete="off" value="#{crudUsuariosController.usuario.apellido}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Correo" for="txtCorreo"/>
+                            <p:inputText id="txtCorreo" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Correo" autocomplete="off" value="#{crudUsuariosController.usuario.email}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Genero" for="cmbGenero"/>
+                            <p:selectOneMenu id="cmbGenero" value="#{crudUsuariosController.usuario.sexo}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="MASCULINO"   itemValue="M" />
+                                <f:selectItem itemLabel="FEMENINO" itemValue="F" />
+                            </p:selectOneMenu>
+
+
+
+                            <p:outputLabel for="fechnac" value="F. Nac.:" />
+                            <p:calendar id="fechnac" value="#{crudUsuariosController.usuario.fechaNacimiento}" navigator="true" locale="es" pattern="dd/MM/yyyy" />
+
+                            <p:outputLabel value="Rol" for="cmbRol"/>
+                            <p:selectOneMenu id="cmbRol" value="#{crudUsuariosController.codigoRol}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="Seleccione"   itemValue="#{null}" />
+                                <f:selectItems value="#{crudUsuariosController.lis_roles}" var="rol" itemLabel="#{rol.nombre}" itemValue="#{rol.id}"/>
+                                <p:ajax event="itemSelect" listener="#{crudUsuariosController.setearRol()}" />
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+                        <br/>
+
+                        <center>
+                            <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 40%"
+                                              actionListener="#{crudUsuariosController.guardarUsuario()}" update=":frmUsuarios:dtgeneral"/> 
+                        </center>
+
+                    </h:form>
+                </p:dialog>
+
+
+                <p:dialog header="Editar Usuario" widgetVar="windowsEditar" id="windowsEditar" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
+                          closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
+                    <h:form id="frmEditar">
+                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:outputLabel value="Id" for="txtCodigo"/>
+                            <p:inputText id="txtCodigo" required="true" requiredMessage="Campo requerido" readonly="true"
+                                         label="Id" autocomplete="off" value="#{crudUsuariosController.usuario.id}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Cédula" for="txtCedula"/>
+                            <p:inputText id="txtCedula" required="true" requiredMessage="Campo requerido" 
+                                         label="Cédula" autocomplete="off" value="#{crudUsuariosController.usuario.cedula}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Nombre" for="txtNombre"/>
+                            <p:inputText id="txtNombre" required="true" requiredMessage="Campo requerido" 
+                                         label="Nombre" autocomplete="off" value="#{crudUsuariosController.usuario.nombre}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Apellido" for="txtApellido"/>
+                            <p:inputText id="txtApellido" required="true" requiredMessage="Campo requerido" 
+                                         label="Apellido" autocomplete="off" value="#{crudUsuariosController.usuario.apellido}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Email" for="txtEmail"/>
+                            <p:inputText id="txtEmail" required="true" requiredMessage="Campo requerido" 
+                                         label="Correo" autocomplete="off" value="#{crudUsuariosController.usuario.email}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Fecha Nacimiento" for="txtFechaNacimiento"/>
+                            <p:calendar id="txtFechaNacimiento" required="true" requiredMessage="Campo requerido"  navigator="true" locale="es" pattern="dd/MM/yyyy"
+                                        label="Fecha Nacimiento" autocomplete="off" value="#{crudUsuariosController.usuario.fechaNacimiento}" 
+                                        inputStyle="width: 100%"/> 
+
+                            <p:outputLabel value="Genero" for="cbGenero"/>
+                            <p:selectOneMenu id="cbGenero" value="#{crudUsuariosController.usuario.sexo}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="MASCULINO"   itemValue="M" />
+                                <f:selectItem itemLabel="FEMENINO" itemValue="F" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Rol" for="cmbRol"/>
+                            <p:selectOneMenu id="cmbRol" value="#{crudUsuariosController.codigoRol}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="#{crudUsuariosController.usuario.codRol.nombre}"   itemValue="#{crudUsuariosController.usuario.codRol.id}" />
+                                <f:selectItems value="#{crudUsuariosController.lis_roles}" var="r" itemLabel="#{r.nombre}" itemValue="#{r.id}"/>
+                                <p:ajax event="itemSelect" listener="#{crudUsuariosController.setearRol()}" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Estado" for="cmbEstado"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{crudUsuariosController.usuario.estado}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="ACTIVO"   itemValue="A" />
+                                <f:selectItem itemLabel="INACTIVO" itemValue="I" />
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+                        <br/>
+                        <center>
+                            <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 50%"
+                                              actionListener="#{crudUsuariosController.guardarEdicionUsuario()}" update=":frmUsuarios:dtgeneral"/> 
+                        </center>
+                    </h:form>
+                </p:dialog>
+
+
+                 <p:dialog header="Permisos" widgetVar="windowsPermisos" id="windowsPermisos" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
+                          style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5"
+                          closeOnEscape="true" onShow="PF('windowsPermisos').initPosition()">
+                    <h:form id="frmPermisos">
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+                                     style="#{crudUsuariosController.lis_modulos.size() > 0 ? 'display:none':''}">
+                            <p:outputLabel style="color:red" value=" No existen Módulos asignados al Rol." />
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="2" styleClass="ui-panelgrid-blank"
+                                     style="#{crudUsuariosController.lis_modulos.size() > 0 ? '':'display:none'}">
+                            <p:outputLabel value="Seleccione Módulo" for="cbModulo"/>
+                            <p:selectOneMenu id="cbModulo" value="#{crudUsuariosController.codigoModulo}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="Seleccione"   itemValue="#{null}" />
+                                <f:selectItems value="#{crudUsuariosController.lis_modulos}" var="m"  itemLabel="#{m.nombre}" itemValue="#{m.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudUsuariosController.seleccionarModulo()}" update="pickList" />
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+
+                        <p:pickList id="pickList" value="#{crudUsuariosController.permisos}" var="c" itemLabel="#{c.nombre}" itemValue="#{c.id}"
+                                    showSourceControls="false" showTargetControls="false" showSourceFilter="false" showTargetFilter="false" responsive="true"
+                                    style="#{crudUsuariosController.lis_modulos.size() > 0 ? '':'display:none'}">
+                            <f:facet name="sourceCaption">Disponibles</f:facet>
+                            <f:facet name="targetCaption">Seleccionados</f:facet>
+                            <p:ajax event="transfer" listener="#{crudUsuariosController.onTransfer}"/>
+                        </p:pickList>
+                        <br/>
+                    </h:form>
+                </p:dialog>
+                
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

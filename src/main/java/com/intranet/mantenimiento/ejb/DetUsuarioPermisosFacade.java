@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.factura.ejb;
+package com.intranet.mantenimiento.ejb;
 
-import com.factura.entity.Rol;
+import com.intranet.entity.DetUsuarioPermisos;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,7 +15,7 @@ import javax.persistence.PersistenceContext;
  * @author Walter Reyes
  */
 @Stateless
-public class RolFacade extends AbstractFacade<Rol> implements RolFacadeLocal {
+public class DetUsuarioPermisosFacade extends AbstractFacade<DetUsuarioPermisos> implements DetUsuarioPermisosFacadeLocal {
 
     @PersistenceContext(unitName = "ConexionBDFactura")
     private EntityManager em;
@@ -25,8 +25,8 @@ public class RolFacade extends AbstractFacade<Rol> implements RolFacadeLocal {
         return em;
     }
 
-    public RolFacade() {
-        super(Rol.class);
+    public DetUsuarioPermisosFacade() {
+        super(DetUsuarioPermisos.class);
     }
     
 }
