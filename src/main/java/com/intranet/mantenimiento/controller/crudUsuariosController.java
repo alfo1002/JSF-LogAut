@@ -12,20 +12,23 @@ import com.intranet.mantenimiento.ejb.PermisosFacadeLocal;
 import com.intranet.mantenimiento.ejb.RolFacadeLocal;
 import com.intranet.mantenimiento.ejb.UsuarioFacadeLocal;
 import com.intranet.entity.DetUsuarioPermisos;
+import com.intranet.entity.Empresa;
 import com.intranet.entity.Modulo;
 import com.intranet.entity.Permisos;
 import com.intranet.entity.Rol;
 import com.intranet.entity.Usuario;
+import com.intranet.mantenimiento.ejb.EmpresaFacadeLocal;
+import com.intranet.utils.Email;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.TransferEvent;
 import org.primefaces.model.DualListModel;
@@ -38,8 +41,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 @Named(value = "crudUsuariosController")
 @ViewScoped
 public class crudUsuariosController implements Serializable {
-
-    private static Properties prop = new Properties();
 
     @EJB
     private UsuarioFacadeLocal usuarioEJB;
@@ -70,6 +71,49 @@ public class crudUsuariosController implements Serializable {
     private List<Rol> lis_roles;
 
     private DualListModel<Permisos> permisos = null;
+
+    /////////////////////////////////////////////////////////////
+    @EJB
+    private EmpresaFacadeLocal empresaEJB;
+
+    private Empresa empresa;
+    private List<Empresa> empresas;
+    
+    @Inject
+    private Email email;
+    
+    @Inject
+    private Configuraciones config;
+    
+    
+    private Integer codEmpresa;
+
+
+
+
+    public Integer getCodEmpresa() {
+        return codEmpresa;
+    }
+
+    public void setCodEmpresa(Integer codEmpresa) {
+        this.codEmpresa = codEmpresa;
+    }
+
+    public Empresa getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
+    }
+
+    public List<Empresa> getEmpresas() {
+        return empresas;
+    }
+
+    public void setEmpresas(List<Empresa> empresas) {
+        this.empresas = empresas;
+    }
 
     public Rol getCodigoRolAntiguo() {
         return codigoRolAntiguo;
@@ -159,11 +203,16 @@ public class crudUsuariosController implements Serializable {
     @PostConstruct
     public void init() {
         try {
+            usuario = new Usuario();
             obtenerTodosUsuarios();
 
             List<Permisos> lista_permisos_disponibles = new ArrayList<>();
             List<Permisos> lista_permisos_seleccionados = new ArrayList<>();
             permisos = new DualListModel<>(lista_permisos_disponibles, lista_permisos_seleccionados);
+
+            empresas = empresaEJB.findAll();
+            lis_roles = rolEJB.findAllActive();
+            //email.enviarEmail("dodoy147@hotmail.com","prueba mensaje", "esta es la información requerida");
 
         } catch (Exception e) {
 
@@ -185,10 +234,10 @@ public class crudUsuariosController implements Serializable {
 
     public void agregarUsuario() {
         try {
-            usuario = new Usuario();
+            
             usuario.setEstado("A");
 
-            lis_roles = rolEJB.findAllActive();
+            
         } catch (Exception e) {
             System.out.println("Error agregando usuario: " + e.toString());
         }
@@ -202,11 +251,14 @@ public class crudUsuariosController implements Serializable {
             System.out.println("Error al buscar rol!" + e.toString());
         }
     }
-
-    public void guardarUsuario() {
+    //tipo = 1 -> interno, 0 es externo
+    public void guardarUsuario(int tipo) {
+        
         try {
 
-            String clave = BCrypt.hashpw(usuario.getCedula() + "123*", BCrypt.gensalt());
+            String salt = config.retornarVariable("salt");
+            
+            String clave = BCrypt.hashpw(usuario.getCedula() + salt , BCrypt.gensalt());
             usuario.setClave(clave);
             Usuario usu = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("usuario");
             usuario.setCodCreador(usu.getId());
@@ -214,10 +266,14 @@ public class crudUsuariosController implements Serializable {
 
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Aviso", "Registro Exitoso!"));
             init();
-            RequestContext.getCurrentInstance().execute("PF('modalNuevoUsuario').hide();");
-
+            if(tipo == 1){
+                RequestContext.getCurrentInstance().execute("PF('modalNuevoUsuario').hide();");
+            }else{
+                RequestContext.getCurrentInstance().execute("PF('addResponsable').hide();");
+            }
         } catch (Exception e) {
             System.out.println("Error al guardarUsuario:" + e.toString());
+            e.printStackTrace();
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", "Error al registrar...."));
         }
     }
@@ -231,7 +287,7 @@ public class crudUsuariosController implements Serializable {
                 usuario = null;
             }
 
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Aviso", "Edicion Exitoso!"));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Aviso", "Edicion Exitosa!"));
             init();
             RequestContext.getCurrentInstance().execute("PF('windowsEditar').hide();");
 
@@ -333,5 +389,48 @@ public class crudUsuariosController implements Serializable {
             e.getStackTrace();
         }
     }
+    
+    public void cambiarClaveUsuario(Usuario usu) {
+        try {
+            usuario = usu;
+
+        } catch (Exception e) {
+            System.out.println("Error en cargarPermisos(Ususairo usu)" + e.toString());
+        }
+    }
+    
+    
+    public void resetearClave(){
+        try {
+            String salt = config.retornarVariable("salt");
+            String clave = BCrypt.hashpw(usuario.getCedula() + salt , BCrypt.gensalt());
+            usuarioEJB.resetearClaveUsuario(clave, usuario.getId());
+            
+            if(!usuario.getEmail().isEmpty()){
+                String asunto = "Reset Contraseña....";
+                String cuerpo = "Su clave de acceso ha sido reseteada por: " + usuario.getCedula() + salt + " Recuerde por su seguridad realizar el cambio de su contraseña una vez que ingrese al sistema!.";
+              
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Aviso", "Contraseña Reiniciada Correctamente"));
+                
+                email.enviarEmail(usuario.getEmail(), asunto, cuerpo);
+                
+                
+            }else{
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Aviso", "Se realizó el cambio pero no se envío el email!"));
+            }
+            RequestContext.getCurrentInstance().execute("PF('windowsClave').hide();");
+            
+        } catch (Exception e) {
+            System.out.println("Error: " + e.toString() + " ----- "+ e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    public void cancelarResetearClave(){
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Aviso", "Se cancelo el cambio de contraseña!"));
+         RequestContext.getCurrentInstance().execute("PF('windowsClave').hide();");
+    }
+
+    
 
 }

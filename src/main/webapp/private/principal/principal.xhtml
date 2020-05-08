@@ -13,29 +13,14 @@
             <ui:define name="content">
 
                 <h:form>
-
-                    <p:dataGrid var="modd" value="#{principalController.lista_modulos}" columns="3" layout="grid"
-                                id="cars">
-
-                        <f:facet name="header">
-                            Opciones del Sistema:
-                        </f:facet>
-
-                        <p:panel header="#{modd.nombre}" style="text-align:center" >
-                            <h:panelGrid columns="1" style="width:100%; cursor: pointer" >
-                                <p:commandLink action="#{principalController.redirect(modd.codigo,modd.url)}">
-                                    <p:graphicImage url="#{request.contextPath}/#{modd.img}" style="width: 8em" /> 
-
-                                    <h:outputText value="#{modd.nombre}" />
-
-                                    <p:commandLink title="V Detail">
-                                        <h:outputText styleClass="pi pi-search" style="margin:0 auto;"/>
-                                    </p:commandLink>
-                                </p:commandLink>
-                            </h:panelGrid>
-                        </p:panel>
-
-                    </p:dataGrid>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <center>
+                        <h:outputLink value="../principal/principal.xhtml"><img src="../../resources/img/logo2.png" style="width: 750px"/></h:outputLink>
+                    </center>
+                    
 
                 </h:form>
 

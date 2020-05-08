@@ -27,17 +27,7 @@ public class mantenimientoController implements Serializable {
     @EJB
     private PermisosFacadeLocal permisosEJB;
 
-    List<Permisos> lis_permisos;
-    
-    private int codModulo;
-
-    public int getCodModulo() {
-        return codModulo;
-    }
-
-    public void setCodModulo(int codModulo) {
-        this.codModulo = codModulo;
-    }
+    List<Permisos> lis_permisos = null;
 
     public List<Permisos> getLis_permisos() {
         return lis_permisos;
@@ -46,30 +36,33 @@ public class mantenimientoController implements Serializable {
     public void setLis_permisos(List<Permisos> lis_permisos) {
         this.lis_permisos = lis_permisos;
     }
-    
+
     public mantenimientoController() {
     }
 
     @PostConstruct
     public void init() {
-        System.out.println("Inicio mantenimiento");
-        codModulo = Integer.parseInt(FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("codModulo"));
-        System.out.println("Modulo a Buscar:" + codModulo);
+
         cargarPermisosSubModulos();
-        
+
     }
 
     public void cargarPermisosSubModulos() {
 
         try {
-            Usuario usu =  (Usuario)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("usuario");
-            lis_permisos = permisosEJB.findPermisosByUsuarioModulo(codModulo, usu.getId());
-            for(int i=0; i< lis_permisos.size(); i++){
-                System.out.println("Permisos del Módulo:" + lis_permisos.get(i).getNombre() + " URL: " + lis_permisos.get(i).getUrl());
+            int codModulo = 0;
+            Object dato = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("codModulo");
+            Usuario usu = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("usuario");
+            if (dato != null) {
+                try {
+                    codModulo = Integer.parseInt(dato.toString());
+                } catch (Exception e) {
+                    codModulo = 0;
+                }
+                lis_permisos = permisosEJB.findPermisosByUsuarioModulo(codModulo, usu.getId());
             }
-
         } catch (Exception e) {
-            System.out.println("Error en cargar permisos mantenimiento:" + e.toString());
+            System.out.println("Error en cargar permisos mantenimientox:" + e.toString());
         }
 
     }

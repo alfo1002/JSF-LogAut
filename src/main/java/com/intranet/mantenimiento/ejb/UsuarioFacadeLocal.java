@@ -33,4 +33,8 @@ public interface UsuarioFacadeLocal {
     Usuario findByCedulax(String cedula);
     
     List<Usuario> findAllOrdenados();
+    
+    void resetearClaveUsuario(String clave , int id);
+    
+    List<Usuario> findByUsuario(Usuario usuario);
 }

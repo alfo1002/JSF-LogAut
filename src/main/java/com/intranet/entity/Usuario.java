@@ -86,6 +86,31 @@ public class Usuario implements Serializable {
     private List<DetUsuarioPermisos> detUsuarioPermisoList;
 
     
+    @JoinColumn(name = "cod_emp", referencedColumnName = "codigo")
+    @ManyToOne(optional = false)
+    private Empresa codEmp;
+    
+    
+    @OneToMany(mappedBy = "codUsuario")
+    private List<Equipo> equiposList;
+
+    public List<Equipo> getEquiposList() {
+        return equiposList;
+    }
+
+    public void setEquiposList(List<Equipo> equiposList) {
+        this.equiposList = equiposList;
+    }
+
+    
+
+    public Empresa getCodEmp() {
+        return codEmp;
+    }
+
+    public void setCodEmp(Empresa codEmp) {
+        this.codEmp = codEmp;
+    }
     
     
     

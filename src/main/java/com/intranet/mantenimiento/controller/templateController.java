@@ -54,7 +54,17 @@ public class templateController implements Serializable {
     private MenuModel model;
 
     String url_principal;
+    
+    private Usuario usu;
 
+    public Usuario getUsu() {
+        return usu;
+    }
+
+    public void setUsu(Usuario usu) {
+        this.usu = usu;
+    }
+    
     public MenuModel getModel() {
         return model;
     }
@@ -76,7 +86,7 @@ public class templateController implements Serializable {
 
         url_principal = FacesContext.getCurrentInstance().getExternalContext().getApplicationContextPath();
 
-        Usuario usu = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("usuario");
+        usu = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("usuario");
         if (usu != null) {
             model = new DefaultMenuModel();
             this.construirMenu();
@@ -111,7 +121,6 @@ public class templateController implements Serializable {
                 for (int i = 0; i < lista_modulosx.size(); i++) {
                     if (uri.contains(lista_modulosx.get(i).getNombre().toLowerCase())) {
                         moduloSeleccionado = lista_modulosx.get(i);
-                        System.out.println("Igualdad en módulo: " + moduloSeleccionado.getNombre());
                         break;
                     }
                 }
@@ -130,10 +139,7 @@ public class templateController implements Serializable {
                         } else {
                             int ban = 0;
                             for (Permisos per : permisosx) {
-                                System.out.println("URI:" + uri);
-                                System.out.println("URL permiso: " + per.getUrl());
                                 if (uri.contains(per.getUrl().replace("..", ""))) {
-                                    System.out.println("Permisos Coinciden: " + per.getNombre() + " --- " + per.getUrl());
                                     return;
                                 }
                             }

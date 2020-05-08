@@ -1,0 +1,636 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../../template/template.xhtml">
+
+            <ui:define name="content">
+
+
+                <h:form id="frmInventario">
+                    <p:growl id="msgs" showDetail="true" />
+                    <p:panel id="basic" header="Administración de Inventario Tecnológico" style="margin-bottom:20px">
+
+                        <h:panelGrid id="pngrid" columns="1" cellpadding="10">
+                            <p:commandButton styleClass="" 
+                                             value="Agregar Equipo" icon="fa fa-plus" update="frmNuevo"
+                                             actionListener="#{crudInventarioTecnologicoController.agregarEquipo()}"
+                                             oncomplete="PF('modalNuevo').show();"/>  
+
+                            <p:dataTable id="dtgeneral" var="lis" value="#{crudInventarioTecnologicoController.lis_equipos}" 
+                                         selectionMode="single" 
+                                         resizableColumns="true"
+                                         reflow="true"
+                                         rowKey="#{lis.codigo}" paginator="true" 
+                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rows="15" emptyMessage="No se encontraron registros."
+                                         currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                         rowsPerPageTemplate="5,10,15"
+                                         paginatorPosition="top">                    
+
+                                <p:column headerText="ID" width="3%" sortBy="#{lis.codigo}" filterBy="#{lis.codigo}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.codigo}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="Tipo" width="7%" sortBy="#{lis.codTipoEquipo.nombre}" filterBy="#{lis.codTipoEquipo.nombre}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.codTipoEquipo.nombre}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="Codificación" width="7%" sortBy="#{lis.codificacion}" filterBy="#{lis.codificacion}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.codificacion}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="Detalle" width="10%" sortBy="#{lis.detalle}" filterBy="#{lis.detalle}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.detalle}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="Serie" width="10%" sortBy="#{lis.serie}" filterBy="#{lis.serie}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.serie}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="INFORME" width="5%" sortBy="#{lis.informe}">
+                                    <center>
+                                        <h:outputText value="#{lis.informe == '1' ? 'FUNCIONAL':'NO FUNCIONAL'}" 
+                                                      style="#{lis.informe == '1' ? 'color:darkgreen;':'color:red;'}"/>
+                                    </center>
+                                </p:column>
+
+                                <p:column headerText="ESTADO" width="5%" sortBy="#{lis.estado}">
+                                    <center>
+                                        <h:outputText value="#{lis.estado == 'A' ? 'ACTIVO':'INACTIVO'}" 
+                                                      style="#{lis.estado == 'A' ? 'color:darkgreen;':'color:red;'}"/>
+                                    </center>
+                                </p:column>
+
+                                <p:column headerText="Opciones:" width="9%">
+                                    <p:commandButton  icon="fa fa-edit" id="btnEditar"
+                                                      actionListener="#{crudInventarioTecnologicoController.setEquipo(lis)}"
+                                                      oncomplete="PF('windowsEditar').show();"
+                                                      update=":frmEditar"/> 
+                                    <p:tooltip id="toolEditar" for="btnEditar"  value="Editar" position="top"/>
+
+                                </p:column>
+
+
+
+                            </p:dataTable>
+
+                        </h:panelGrid>
+                    </p:panel>
+                </h:form>
+
+                <p:dialog header="" widgetVar="modalNuevo" id="modalNuevo" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="72%" resizable="true" draggable="true" position="center,center" 
+                          closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
+                    <h:form id="frmNuevo">
+                        <p:growl id="growll" life="3000" />
+                        <div style="padding: 1px; background: #8fa6ad; color: white">
+                            <center><h2 style="">Nuevo Equipo:</h2></center>
+                        </div>
+                        <br/>
+                        <p:panelGrid columns="6" layout="grid" styleClass="ui-panelgrid-blank" >
+
+                            <p:outputLabel value="Empresa" for="cmbEmpresa"/>
+                            <p:selectOneMenu id="cmbEmpresa" value="#{crudInventarioTecnologicoController.codEmpresa}"  filter="true" filterMatchMode="startsWith"
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="Seleccione"   itemValue="#{null}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_empresa}" var="emp" itemLabel="#{emp.nombre}" itemValue="#{emp.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearEmpresa()}" />
+                            </p:selectOneMenu>
+                            <p:commandButton icon="fa fa-plus" oncomplete="PF('addEmpresa').show();" actionListener="#{crudInventarioTecnologicoController.addEmpresa()}" />
+
+                            <p:outputLabel value="Codificación" for="txtCodificacion"/>
+                            <p:inputText id="txtCodificacion" required="true" requiredMessage="Campo obligatorio" readonly="true"
+                                         label="Codificación" autocomplete="off" value="#{crudInventarioTecnologicoController.equipo.codificacion}" 
+                                         style="width: 100%; background: #8fa6ad; color: white"/>
+                            <p:outputLabel />
+
+                            <p:outputLabel value="Tipo Equipo" for="cmbTipoEquipo"/>
+                            <p:selectOneMenu id="cmbTipoEquipo" value="#{crudInventarioTecnologicoController.codTipoEquipo}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="Seleccione"   itemValue="#{null}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_tipo_equipo}" var="tequi" itemLabel="#{tequi.nombre}" itemValue="#{tequi.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearTipoEquipo()}" update="txtCodificacion" />
+                            </p:selectOneMenu>
+                            <p:commandButton icon="fa fa-plus" oncomplete="PF('addTipoEquipo').show();" actionListener="#{crudInventarioTecnologicoController.addTipoEquipo()}" />
+
+                            <p:outputLabel value="Estado" for="cmbEstado"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{crudInventarioTecnologicoController.equipo.estado}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="ACTIVO"   itemValue="A" />
+                                <f:selectItem itemLabel="INACTIVO" itemValue="I" />
+                            </p:selectOneMenu>
+                            <p:outputLabel/>
+
+                            <p:outputLabel value="Marca" for="cmbMarca"/>
+                            <p:selectOneMenu id="cmbMarca" value="#{crudInventarioTecnologicoController.codMarca}" filter="true" filterMatchMode="startsWith"
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="Seleccione"   itemValue="#{null}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_marcas}" var="mar" itemLabel="#{mar.nombre}" itemValue="#{mar.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearTipoMarca()}" update="cmbModelo btModelo" />
+                            </p:selectOneMenu>
+                            <p:commandButton icon="fa fa-plus" oncomplete="PF('addMarca').show();" actionListener="#{crudInventarioTecnologicoController.addMarca()}"/>
+
+                            <p:outputLabel value="Modelo" for="cmbModelo"/>
+                            <p:selectOneMenu id="cmbModelo" value="#{crudInventarioTecnologicoController.codModelo}"  filter="true" filterMatchMode="startsWith"
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="Seleccione"   itemValue="#{null}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_modelos}" var="modd" itemLabel="#{modd.nombre}" itemValue="#{modd.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearTipoModelo()}" />
+                            </p:selectOneMenu>
+                            <p:commandButton id="btModelo" icon="fa fa-plus" oncomplete="PF('addModelo').show();" actionListener="#{crudInventarioTecnologicoController.addModelo()}" style="#{crudInventarioTecnologicoController.marca == null ? 'visibility:hidden;':''}" />
+
+                            <p:outputLabel value="Serie" for="txtSerie"/>
+                            <p:inputText id="txtSerie" 
+                                         label="Serie" autocomplete="off" value="#{crudInventarioTecnologicoController.equipo.serie}" 
+                                         style="width: 100%"/>
+                            <p:outputLabel/>
+
+                            <p:outputLabel value="MAC" for="txtMac"/>
+                            <p:inputText id="txtMac"  
+                                         label="MAC" autocomplete="off" value="#{crudInventarioTecnologicoController.equipo.mac}" 
+                                         style="width: 100%"/>
+                            <p:outputLabel/>
+
+                            <p:outputLabel value="Color" for="cmbColor"/>
+                            <p:selectOneMenu id="cmbColor" value="#{crudInventarioTecnologicoController.codColor}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" filter="true" filterMatchMode="startsWith" >
+                                <f:selectItem itemLabel="Seleccione"   itemValue="#{null}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_color}" var="col" itemLabel="#{col.nombre}" itemValue="#{col.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearColor()}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel/>
+
+                            <p:outputLabel for="fechhoy" value="Fecha Hoy:" />
+                            <p:calendar id="fechhoy" value="#{crudInventarioTecnologicoController.equipo.fechaHoy}" navigator="true" locale="es" pattern="dd/MM/yyyy" />
+                            <p:outputLabel/>
+
+                            <p:outputLabel value="Responsable" for="cmbResponsable"/>
+                            <p:selectOneMenu id="cmbResponsable" value="#{crudInventarioTecnologicoController.codUsuario}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" filter="true" filterMatchMode="startsWith" >
+                                <f:selectItem itemLabel="Seleccione"   itemValue="#{null}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_usuario}" var="res" itemLabel="#{res.apellido} #{res.nombre}" itemValue="#{res.id}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearUsuario()}" />
+                            </p:selectOneMenu>
+                            <p:commandButton icon="fa fa-plus" oncomplete="PF('addResponsable').show();" actionListener="#{crudInventarioTecnologicoController.addResponsable()}"/>
+
+                            <p:outputLabel value="Sector" for="cmbSector"/>
+                            <p:selectOneMenu id="cmbSector" value="#{crudInventarioTecnologicoController.codSector}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" filter="true" filterMatchMode="startsWith" >
+                                <f:selectItem itemLabel="Seleccione"   itemValue="#{null}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_sector}" var="sec" itemLabel="#{sec.nombre}" itemValue="#{sec.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearSector()}" />
+                            </p:selectOneMenu>
+                            <p:commandButton icon="fa fa-plus" oncomplete="PF('addSector').show();" actionListener="#{crudInventarioTecnologicoController.addSector()}" />
+
+                            <p:outputLabel value="Vida útil" for="txtvidaUtil"/>
+                            <p:inputText id="txtvidaUtil" required="true" requiredMessage="Campo obligatorio" 
+                                         label="MAC" autocomplete="off" value="#{crudInventarioTecnologicoController.equipo.vidaUtil}" 
+                                         style="width: 100%"/>
+                            <p:outputLabel/>
+
+                            <p:outputLabel value="Informe" for="cmbInforme"/>
+                            <p:selectOneMenu id="cmbInforme" value="#{crudInventarioTecnologicoController.equipo.informe}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="FUNCIONAL"   itemValue="1" />
+                                <f:selectItem itemLabel="NO FUNCIONAL" itemValue="0" />
+                            </p:selectOneMenu>
+                            <p:outputLabel/>
+
+                            <p:outputLabel value="Detalle" for="txtInforme"/>
+                            <p:inputTextarea id="txtInforme" value="#{crudInventarioTecnologicoController.equipo.detalle}" rows="5" cols="62" required="true" maxlength="500"  autoResize="false" />
+                            <p:outputLabel/>
+
+                        </p:panelGrid>
+                        <br/>
+                        <center>
+                            <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 40%"
+                                              actionListener="#{crudInventarioTecnologicoController.guardarEquipo()}" update=":frmInventario:dtgeneral growll"/> 
+                        </center>
+
+                    </h:form>
+                </p:dialog>
+
+
+                <p:dialog header="" widgetVar="windowsEditar" id="windowsEditar" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="72%" resizable="true" draggable="true" position="center,center" 
+                          closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
+                    <h:form id="frmEditar">
+                        <p:growl id="growl" life="3000" />
+                        <div style="padding: 1px; background: #8fa6ad; color: white">
+                            <center><h2 style="">Editar datos del Equipo:</h2></center>
+                        </div>
+                        <br/>
+                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank" >
+
+                            <p:outputLabel value="Codigo" for="txtCodigo"/>
+                            <p:inputText id="txtCodigo" required="true" requiredMessage="Campo requerido" readonly="true"
+                                         label="Codigo" autocomplete="off" value="#{crudInventarioTecnologicoController.equipo.codigo}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Codificación" for="txtCodificacion"/>
+                            <p:inputText id="txtCodificacion" required="true" requiredMessage="Campo obligatorio" readonly="true"
+                                         label="Codificación" autocomplete="off" value="#{crudInventarioTecnologicoController.equipo.codificacion}" 
+                                         style="width: 100%; background: #8fa6ad; color: white"/>
+
+                            <p:outputLabel value="Empresa" for="cmbEmpresa"/>
+                            <p:selectOneMenu id="cmbEmpresa" value="#{crudInventarioTecnologicoController.codEmpresa}"  filter="true" filterMatchMode="startsWith"
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="#{crudInventarioTecnologicoController.equipo.codEmpresa.nombre}" itemValue="#{crudInventarioTecnologicoController.equipo.codEmpresa.codigo}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_empresa}" var="emp" itemLabel="#{emp.nombre}" itemValue="#{emp.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearEmpresa()}" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Tipo Equipo" for="cmbTipoEquipo"/>
+                            <p:selectOneMenu id="cmbTipoEquipo" value="#{crudInventarioTecnologicoController.codTipoEquipo}"  filter="true" filterMatchMode="startsWith"
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="#{crudInventarioTecnologicoController.equipo.codTipoEquipo.nombre}" itemValue="#{crudInventarioTecnologicoController.equipo.codTipoEquipo.codigo}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_tipo_equipo}" var="tequi" itemLabel="#{tequi.nombre}" itemValue="#{tequi.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearTipoEquipo()}" update="txtCodificacion" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Estado" for="cmbEstado"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{crudInventarioTecnologicoController.equipo.estado}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="ACTIVO"   itemValue="A" />
+                                <f:selectItem itemLabel="INACTIVO" itemValue="I" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Marca" for="cmbMarca"/>
+                            <p:selectOneMenu id="cmbMarca" value="#{crudInventarioTecnologicoController.codMarca}" filter="true" filterMatchMode="startsWith"
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="#{crudInventarioTecnologicoController.equipo.codMarca.nombre}" itemValue="#{crudInventarioTecnologicoController.equipo.codMarca.codigo}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_marcas}" var="mar" itemLabel="#{mar.nombre}" itemValue="#{mar.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearTipoMarca()}" update="cmbModelo" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Modelo" for="cmbModelo"/>
+                            <p:selectOneMenu id="cmbModelo" value="#{crudInventarioTecnologicoController.codModelo}"  filter="true" filterMatchMode="startsWith"
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="#{crudInventarioTecnologicoController.equipo.codModelo.nombre}" itemValue="#{crudInventarioTecnologicoController.equipo.codModelo.codigo}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_modelos}" var="modd" itemLabel="#{modd.nombre}" itemValue="#{modd.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearTipoModelo()}" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Serie" for="txtSerie"/>
+                            <p:inputText id="txtSerie" 
+                                         label="Serie" autocomplete="off" value="#{crudInventarioTecnologicoController.equipo.serie}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="MAC" for="txtMac"/>
+                            <p:inputText id="txtMac"  
+                                         label="MAC" autocomplete="off" value="#{crudInventarioTecnologicoController.equipo.mac}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Color" for="cmbColor"/>
+                            <p:selectOneMenu id="cmbColor" value="#{crudInventarioTecnologicoController.codColor}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" filter="true" filterMatchMode="startsWith" >
+                                <f:selectItem itemLabel="#{crudInventarioTecnologicoController.equipo.codColor.nombre}" itemValue="#{crudInventarioTecnologicoController.equipo.codColor.codigo}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_color}" var="col" itemLabel="#{col.nombre}" itemValue="#{col.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearColor()}" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel for="fechhoy" value="Fecha Hoy:" />
+                            <p:calendar id="fechhoy" value="#{crudInventarioTecnologicoController.equipo.fechaHoy}" navigator="true" locale="es" pattern="dd/MM/yyyy" />
+
+                            <p:outputLabel value="Responsable" for="cmbResponsable"/>
+                            <p:selectOneMenu id="cmbResponsable" value="#{crudInventarioTecnologicoController.codUsuario}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" filter="true" filterMatchMode="startsWith" >
+                                <f:selectItem itemLabel="#{crudInventarioTecnologicoController.equipo.codUsuario.apellido} #{crudInventarioTecnologicoController.equipo.codUsuario.nombre}" itemValue="#{crudInventarioTecnologicoController.equipo.codUsuario.id}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_usuario}" var="res" itemLabel="#{res.apellido} #{res.nombre}" itemValue="#{res.id}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearUsuario()}" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Sector" for="cmbSector"/>
+                            <p:selectOneMenu id="cmbSector" value="#{crudInventarioTecnologicoController.codSector}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" filter="true" filterMatchMode="startsWith" >
+                                <f:selectItem itemLabel="#{crudInventarioTecnologicoController.equipo.codSector.nombre}" itemValue="#{crudInventarioTecnologicoController.equipo.codSector.codigo}" />
+                                <f:selectItems value="#{crudInventarioTecnologicoController.lis_sector}" var="sec" itemLabel="#{sec.nombre}" itemValue="#{sec.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudInventarioTecnologicoController.setearSector()}" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Vida útil" for="txtvidaUtil"/>
+                            <p:inputText id="txtvidaUtil" required="true" requiredMessage="Campo obligatorio" 
+                                         label="MAC" autocomplete="off" value="#{crudInventarioTecnologicoController.equipo.vidaUtil}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Informe" for="cmbInforme"/>
+                            <p:selectOneMenu id="cmbInforme" value="#{crudInventarioTecnologicoController.equipo.informe}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="FUNCIONAL"   itemValue="1" />
+                                <f:selectItem itemLabel="NO FUNCIONAL" itemValue="0" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel/>
+                            <p:outputLabel/>
+
+                            <p:outputLabel value="Detalle" for="txtInforme"/>
+                            <p:inputTextarea id="txtInforme" value="#{crudInventarioTecnologicoController.equipo.detalle}" rows="5" cols="62" required="true" maxlength="500"  autoResize="false" />
+
+                        </p:panelGrid>
+                        <br/>
+                        <center>
+                            <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 40%"
+                                              actionListener="#{crudInventarioTecnologicoController.guardarEdicionEquipo()}" update=":frmInventario:dtgeneral growl"/> 
+                        </center>
+
+                    </h:form>
+                </p:dialog>
+
+                <!--*********************************** MODAL EXTERNOS *****************************************************-->
+
+                <!--*********************************** Empresa ***********************************************************-->
+                <p:dialog header="Nueva Empresa" widgetVar="addEmpresa" id="addEmpresa" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
+                          closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
+                    <h:form id="frmNuevaEmpresa">
+                        <p:growl life="4000"  id="growl" showDetail="true" />
+                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank" >
+
+                            <p:outputLabel value="Codigo" for="txtCodigo"/>
+                            <p:inputText id="txtCodigo" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Codigo" autocomplete="off" value="#{crudEmpresasController.empresa.codigo}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Nombre" for="txtNombre"/>
+                            <p:inputText id="txtNombre" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Nombre" autocomplete="off" value="#{crudEmpresasController.empresa.nombre}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Identificador" for="txtIdentificador"/>
+                            <p:inputText id="txtIdentificador" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Identificador" autocomplete="off" value="#{crudEmpresasController.empresa.identificador}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Acronimo" for="txtAcronimo"/>
+                            <p:inputText id="txtAcronimo" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Acronimo" autocomplete="off" value="#{crudEmpresasController.empresa.acronimo}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Contador" for="txtContador"/>
+                            <p:inputText id="txtContador" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Contador" autocomplete="off" value="#{crudEmpresasController.empresa.contador}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Estado" for="cmbEstado"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{crudEmpresasController.empresa.estado}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="ACTIVO"   itemValue="A" />
+                                <f:selectItem itemLabel="INACTIVO" itemValue="I" />
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+                        <br/>
+
+                        <center>
+                            <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 40%"
+                                              actionListener="#{crudInventarioTecnologicoController.registrarEmpresa()}" update="frmNuevo:cmbEmpresa growl"/> 
+                        </center>
+
+                    </h:form>
+                </p:dialog>
+                
+                
+                <!--*********************************** Marca ***************************************************************-->
+                <p:dialog header="Nueva Marca" widgetVar="addMarca" id="addMarca" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
+                          closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
+                    <h:form id="frmNuevaMarca">
+                        <p:growl life="4000"  id="growl" showDetail="true" />
+                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank" >
+
+                            <p:outputLabel value="Nombre" for="txtNombre"/>
+                            <p:inputText id="txtNombre" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Nombre" autocomplete="off" value="#{crudMarcasController.marca.nombre}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Descripción" for="txtDescripcion"/>
+                            <p:inputText id="txtDescripcion" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Descripción" autocomplete="off" value="#{crudMarcasController.marca.descripcion}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Estado" for="cmbEstado"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{crudMarcasController.marca.estado}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="ACTIVO"   itemValue="A" />
+                                <f:selectItem itemLabel="INACTIVO" itemValue="I" />
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+                        <br/>
+
+                        <center>
+                            <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 40%"
+                                              actionListener="#{crudInventarioTecnologicoController.registrarMarca()}" update="frmNuevo:cmbMarca growl"/> 
+                        </center>
+                    </h:form>
+                </p:dialog>
+                
+                
+                <!--*********************************** Modelo **************************************************************-->
+                <p:dialog header="Nuevo Modelo" widgetVar="addModelo" id="addModelo" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
+                          closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
+                    <h:form id="frmNuevoModelo">
+                        <p:growl life="4000"  id="growl" showDetail="true" />
+                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank" >
+
+                            <p:outputLabel value="Nombre" for="txtNombre"/>
+                            <p:inputText id="txtNombre" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Nombre" autocomplete="off" value="#{crudModelosController.modelo.nombre}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Descripción" for="txtDescripcion"/>
+                            <p:inputText id="txtDescripcion" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Descripción" autocomplete="off" value="#{crudModelosController.modelo.descripcion}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Marca" for="cmbMarca"/>
+                            <p:selectOneMenu id="cmbMarca" value="#{crudModelosController.codMarca}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="Seleccione"   itemValue="#{null}" />
+                                <f:selectItems value="#{crudModelosController.lis_marca}" var="lis" itemLabel="#{lis.nombre}" itemValue="#{lis.codigo}"/>
+                                <p:ajax event="itemSelect" listener="#{crudModelosController.setearMarca()}" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Estado" for="cmbEstado"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{crudModelosController.modelo.estado}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="ACTIVO"   itemValue="A" />
+                                <f:selectItem itemLabel="INACTIVO" itemValue="I" />
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+                        <br/>
+
+                        <center>
+                            <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 40%"
+                                              actionListener="#{crudInventarioTecnologicoController.registrarModelo()}" update="frmNuevo:cmbModelo growl"/> 
+                        </center>
+
+                    </h:form>
+                </p:dialog>
+
+                
+                <!--*********************************** Responsable *********************************************************-->
+                <p:dialog header="Nuevo Usuario" widgetVar="addResponsable" id="addResponsable" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
+                          closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
+                    <h:form id="frmNuevoUsuario">
+                         <p:growl life="4000"  id="growl" showDetail="true" />
+                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank" >
+                            <p:outputLabel value="Cédula" for="txtCedula"/>
+                            <p:inputText id="txtCedula" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Cédula" autocomplete="off" value="#{crudUsuariosController.usuario.cedula}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Estado" for="cmbEstado"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{crudUsuariosController.usuario.estado}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="ACTIVO"   itemValue="A" />
+                                <f:selectItem itemLabel="INACTIVO" itemValue="I" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Nombre" for="txtNombre"/>
+                            <p:inputText id="txtNombre" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Nombre" autocomplete="off" value="#{crudUsuariosController.usuario.nombre}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Apellido" for="txtApellido"/>
+                            <p:inputText id="txtApellido" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Apellido" autocomplete="off" value="#{crudUsuariosController.usuario.apellido}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Correo" for="txtCorreo"/>
+                            <p:inputText id="txtCorreo" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Correo" autocomplete="off" value="#{crudUsuariosController.usuario.email}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Genero" for="cmbGenero"/>
+                            <p:selectOneMenu id="cmbGenero" value="#{crudUsuariosController.usuario.sexo}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="MASCULINO"   itemValue="M" />
+                                <f:selectItem itemLabel="FEMENINO" itemValue="F" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel for="fechnac" value="F. Nac.:" />
+                            <p:calendar id="fechnac" value="#{crudUsuariosController.usuario.fechaNacimiento}" navigator="true" locale="es" pattern="dd/MM/yyyy" />
+
+                            <p:outputLabel value="Rol" for="cmbRol"/>
+                            <p:selectOneMenu id="cmbRol" value="#{crudUsuariosController.codigoRol}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="Seleccione"   itemValue="#{null}" />
+                                <f:selectItems value="#{crudUsuariosController.lis_roles}" var="rol" itemLabel="#{rol.nombre}" itemValue="#{rol.id}"/>
+                                <p:ajax event="itemSelect" listener="#{crudUsuariosController.setearRol()}" />
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+                        <br/>
+                        <center>
+                            <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 40%"
+                                              actionListener="#{crudInventarioTecnologicoController.registrarUsuario()}" update="frmNuevo:cmbResponsable growl"/> 
+                        </center>
+                    </h:form>
+                </p:dialog>
+                
+                
+                
+                <!--*********************************** Sector **************************************************************-->
+                <p:dialog header="Nuevo Sector" widgetVar="addSector" id="addSector" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
+                          closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
+                    <h:form id="frmNuevoSector">
+                        <p:growl life="4000"  id="growl" showDetail="true" />
+                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank" >
+
+                            <p:outputLabel value="Nombre" for="txtNombre"/>
+                            <p:inputText id="txtNombre" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Nombre" autocomplete="off" value="#{crudSectoresController.sector.nombre}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Descripción" for="txtDescripcion"/>
+                            <p:inputText id="txtDescripcion" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Descripción" autocomplete="off" value="#{crudSectoresController.sector.descripcion}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Estado" for="cmbEstado"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{crudSectoresController.sector.estado}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="ACTIVO"   itemValue="A" />
+                                <f:selectItem itemLabel="INACTIVO" itemValue="I" />
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+                        <br/>
+
+                        <center>
+                            <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 40%"
+                                              actionListener="#{crudInventarioTecnologicoController.registrarSector()}" update="frmNuevo:cmbSector growl"/> 
+                        </center>
+
+                    </h:form>
+                </p:dialog>
+                
+                
+                <!--*********************************** Tipo Equipo *********************************************************-->
+                <p:dialog header="Nuevo Tipo de Equipo" widgetVar="addTipoEquipo" id="addTipoEquipo" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
+                          closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
+                    <h:form id="frmNuevoTipoEquipo">
+                        <p:growl life="4000"  id="growl" showDetail="true" />
+                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank" >
+
+                            <p:outputLabel value="Nombre" for="txtNombre"/>
+                            <p:inputText id="txtNombre" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Nombre" autocomplete="off" value="#{crudTipoEquipoController.tipo_equipo.nombre}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Descripción" for="txtDescripcion"/>
+                            <p:inputText id="txtDescripcion" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Descripción" autocomplete="off" value="#{crudTipoEquipoController.tipo_equipo.descripcion}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Acrónimo" for="txtAcronimo"/>
+                            <p:inputText id="txtAcronimo" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Acrónimo" autocomplete="off" value="#{crudTipoEquipoController.tipo_equipo.acronimo}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Estado" for="cmbEstado"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{crudTipoEquipoController.tipo_equipo.estado}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="ACTIVO"   itemValue="A" />
+                                <f:selectItem itemLabel="INACTIVO" itemValue="I" />
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+                        <br/>
+
+                        <center>
+                            <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 40%"
+                                              actionListener="#{crudInventarioTecnologicoController.registrarTipoEquipo()}" update="frmNuevo:cmbTipoEquipo growl"/> 
+                        </center>
+
+                    </h:form>
+                </p:dialog>
+                
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

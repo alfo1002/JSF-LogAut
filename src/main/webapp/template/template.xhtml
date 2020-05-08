@@ -7,10 +7,12 @@
 
     <f:view contentType="text/html">
         <h:head>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <link rel="shortcut icon" type="image/x-icon" href="#{request.contextPath}/resources/img/icono.ico"/>
             <f:facet name="first">
                 <meta content='text/html; charset=UTF-8' http-equiv="Content-Type"/>
                 <f:event type="preRenderView" listener="#{templateController.verificarSesion()}" />
-                <title>JSF-Factura</title>
+                <title>Grupo Corporativo Fajardo</title>
             </f:facet>
 
             <script>
@@ -71,11 +73,11 @@
                                 <p:graphicImage url="/resources/img/camaron.png"  style="width: 4em"/>
                             </p:link> -->
 
-                            <h:outputLink value="../principal/principal.xhtml"><img src="../../resources/img/camaron.png" style="width: 3em"/></h:outputLink>
+                            <h:outputLink value="../principal/principal.xhtml"><img src="../../resources/img/logo_hor.png" style="position: absolute"/></h:outputLink>
 
-                            <div align="right">
+                            <div align="right" style="padding-top: 2%">
+                                <strong>Usuario: </strong><p:outputLabel value=" #{templateController.usu.nombre} ">  </p:outputLabel>
                                 <p:commandButton icon="ui-icon-power" actionListener="#{templateController.cerrarSesion()}" action="/index?faces-redirect=true" title="Cerrar Sesión" />
-                                <p:commandButton action="#{templateController.obtenerModulos()}" value="Obtener" />
                             </div>
                         </h:form>
                     </ui:insert>

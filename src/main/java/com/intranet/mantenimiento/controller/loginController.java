@@ -10,6 +10,7 @@ import com.intranet.entity.Usuario;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
@@ -51,8 +52,10 @@ public class loginController implements Serializable{
                     redireccion = "/private/principal/principal.xhtml";
                 }else{
                     System.out.println("Login Erroneo!.....");
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Datos Incorrectos.",""));
                 }
             }else{
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_FATAL, "Datos Incorrectos.",""));
                 System.out.println("Usuario no existe!");
             }
         }

@@ -6,8 +6,10 @@
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="shortcut icon" type="image/x-icon" href="#{request.contextPath}/resources/img/icono.ico"/>
         <f:event type="preRenderView" listener="#{loginController.verificarSesion()}"  />
-        <title>Sistema de Facturación</title>
+        <title>Grupo Corporativo Fajardo</title>
     </h:head>
     <h:body>
 
@@ -15,12 +17,13 @@
         <div style="margin: 0 auto; margin-top: 70px">
             <center>
                 <h:form>
+                    <p:growl id="growl" life="4000" />
                     <p:panel header="Ingreso al Sistema" style="width:300px">
                         <table border="0">
                             <tr>
                                 <td>
                                     <center>
-                                        <p:graphicImage url="../../resources/img/camaron.png" style="width: 14em" />
+                                        <p:graphicImage url="../../resources/img/logo_ver.jpg" style="width: 14em" />
                                     </center>
                                 </td>
                             </tr>
@@ -46,7 +49,7 @@
                             </tr>
                             <tr style="padding: 25px">
                                 <td>
-                                    <center><p:commandButton value="Ingresar" action="#{loginController.iniciarSesion()}"></p:commandButton></center>
+                                    <center><p:commandButton value="Ingresar" action="#{loginController.iniciarSesion()}" update="growl"></p:commandButton></center>
                                 </td>
                             </tr>
                         </table>

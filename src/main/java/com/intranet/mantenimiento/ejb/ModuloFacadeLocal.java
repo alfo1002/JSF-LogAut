@@ -6,6 +6,7 @@
 package com.intranet.mantenimiento.ejb;
 
 import com.intranet.entity.Modulo;
+import com.intranet.entity.Rol;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -33,5 +34,9 @@ public interface ModuloFacadeLocal {
     List<Modulo> findByCodigoRolUsuario(int codRolUsu);
     
     Modulo findbyIdActivos(int id);
+    
+    List<Modulo> findByAllActivos();
+    
+    void eliminarModulosPorModuloyRol(Modulo mod, Rol rol);
     
 }

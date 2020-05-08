@@ -14,6 +14,11 @@
                 <h1>Módulo Mantenimiento</h1>
                 
                  <h:form>
+                     <p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
+                                     style="#{mantenimientoController.lis_permisos.size() > 0 ? 'display:none':'' }">
+                            <p:outputLabel style="color:red" value=" No existen Permisos asignados a este módulo" />
+                        </p:panelGrid>
+                     
                      <p:dataGrid var="per" value="#{mantenimientoController.lis_permisos}" columns="3" layout="grid">
                         <p:panel header="#{per.nombre}" style="text-align:center" >
                             <h:panelGrid columns="1" style="width:100%; cursor: pointer; height: 160px" >

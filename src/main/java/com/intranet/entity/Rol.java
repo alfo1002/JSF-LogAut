@@ -6,6 +6,7 @@
 package com.intranet.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -18,6 +19,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -52,11 +55,40 @@ public class Rol implements Serializable {
     @Size(max = 255)
     @Column(name = "url")
     private String url;
+    
+    @Column(name = "creado_por")
+    private Integer creado_por;
+    @Column(name = "fecha_crea")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fecha_crea;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "codRol")
     private List<Usuario> usuarioList;
     @OneToMany(mappedBy = "codRol")
     private List<DetRolModulo> detRolModuloList;
+    
+    
+    
 
+    public Integer getCreado_por() {
+        return creado_por;
+    }
+
+    public void setCreado_por(Integer creado_por) {
+        this.creado_por = creado_por;
+    }
+
+    public Date getFecha_crea() {
+        return fecha_crea;
+    }
+
+    public void setFecha_crea(Date fecha_crea) {
+        this.fecha_crea = fecha_crea;
+    }
+    
+
+    
+    
     public Rol() {
     }
 

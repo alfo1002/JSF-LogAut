@@ -6,6 +6,7 @@
 package com.intranet.mantenimiento.ejb;
 
 import com.intranet.entity.DetUsuarioPermisos;
+import com.intranet.entity.Modulo;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

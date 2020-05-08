@@ -70,13 +70,19 @@
                                                       actionListener="#{crudUsuariosController.setUsuario(lis)}"
                                                       oncomplete="PF('windowsEditar').show();"
                                                       update=":frmEditar"/> 
-                                    <p:tooltip id="toolEditar" value="Editar" position="top"/>
+                                    <p:tooltip id="toolEditar" for="btnEditar"  value="Editar" position="top"/>
 
                                     <p:commandButton  icon="fa fa-list-alt" id="btnPermisos"
                                                       actionListener="#{crudUsuariosController.cargarPermisos(lis)}"
                                                       oncomplete="PF('windowsPermisos').show();"
                                                       update=":frmPermisos"/> 
                                     <p:tooltip id="toolPermisos" for="btnPermisos" value="Permisos" position="top"/>
+
+                                    <p:commandButton  icon="fa fa-cog" id="btnClave"
+                                                      actionListener="#{crudUsuariosController.cambiarClaveUsuario(lis)}"
+                                                      oncomplete="PF('windowsClave').show();"
+                                                      update=":frmClave"/> 
+                                    <p:tooltip id="toolClave" for="btnClave" value="Clave" position="top"/>
 
                                 </p:column>
 
@@ -93,6 +99,7 @@
                           modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
                           closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
                     <h:form id="frmNuevoUsuario">
+                        <p:growl id="growl" life="4000" showDetail="true" />
                         <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank" >
                             <p:outputLabel value="Cédula" for="txtCedula"/>
                             <p:inputText id="txtCedula" required="true" requiredMessage="Campo obligatorio" 
@@ -143,12 +150,10 @@
 
                         </p:panelGrid>
                         <br/>
-
                         <center>
                             <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 40%"
-                                              actionListener="#{crudUsuariosController.guardarUsuario()}" update=":frmUsuarios:dtgeneral"/> 
+                                              actionListener="#{crudUsuariosController.guardarUsuario(1)}" update=":frmUsuarios:dtgeneral growl"/> 
                         </center>
-
                     </h:form>
                 </p:dialog>
 
@@ -158,6 +163,7 @@
                           modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
                           closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
                     <h:form id="frmEditar">
+                        <p:growl id="growl" life="4000" showDetail="true" />
                         <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank">
 
                             <p:outputLabel value="Id" for="txtCodigo"/>
@@ -216,18 +222,19 @@
                         <br/>
                         <center>
                             <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 50%"
-                                              actionListener="#{crudUsuariosController.guardarEdicionUsuario()}" update=":frmUsuarios:dtgeneral"/> 
+                                              actionListener="#{crudUsuariosController.guardarEdicionUsuario()}" update=":frmUsuarios:dtgeneral growl"/> 
                         </center>
                     </h:form>
                 </p:dialog>
 
 
-                 <p:dialog header="Permisos" widgetVar="windowsPermisos" id="windowsPermisos" 
+                <p:dialog header="Permisos" widgetVar="windowsPermisos" id="windowsPermisos" 
                           appendTo="@(body)" responsive="true" 
                           modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
                           style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5"
                           closeOnEscape="true" onShow="PF('windowsPermisos').initPosition()">
                     <h:form id="frmPermisos">
+                        <p:growl id="growl" life="4000" showDetail="true"/>
                         <p:panelGrid columns="1" styleClass="ui-panelgrid-blank"
                                      style="#{crudUsuariosController.lis_modulos.size() > 0 ? 'display:none':''}">
                             <p:outputLabel style="color:red" value=" No existen Módulos asignados al Rol." />
@@ -249,12 +256,33 @@
                                     style="#{crudUsuariosController.lis_modulos.size() > 0 ? '':'display:none'}">
                             <f:facet name="sourceCaption">Disponibles</f:facet>
                             <f:facet name="targetCaption">Seleccionados</f:facet>
-                            <p:ajax event="transfer" listener="#{crudUsuariosController.onTransfer}"/>
+                            <p:ajax event="transfer" listener="#{crudUsuariosController.onTransfer}" update="growl"/>
                         </p:pickList>
                         <br/>
                     </h:form>
                 </p:dialog>
-                
+
+
+                <p:dialog header="Resetear Clave de Usuario" widgetVar="windowsClave" id="windowsClave" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="50%" resizable="true" draggable="true" position="center,center" 
+                          style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5; color: red"
+                          closeOnEscape="true" onShow="PF('windowsClave').initPosition()">
+                    <h:form id="frmClave">
+                        <p:growl id="growl" life="4000"  showDetail="true"/>
+                        <p:panelGrid columns="4" styleClass="ui-panelgrid-blank">
+                            <p:outputLabel value="¿Esta Seguro de Resetear la clave del Usuario?"/>
+                            <center>
+                            <p:commandButton  icon="fa fa-check" value="Si" style="width: 100%"
+                                              actionListener="#{crudUsuariosController.resetearClave()}" update="growl"/> 
+                            <p:commandButton  icon="fa fa-close" value="No" style="width: 100%"
+                                              actionListener="#{crudUsuariosController.cancelarResetearClave()}" update="growl"/> 
+                            </center>
+                        </p:panelGrid>
+
+                        <br/>
+                    </h:form>
+                </p:dialog>
 
             </ui:define>
 

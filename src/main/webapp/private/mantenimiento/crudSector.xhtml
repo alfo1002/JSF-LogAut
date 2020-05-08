@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./../../template/template.xhtml">
+
+            <ui:define name="content">
+                
+                <h:form id="frmSector">
+                    <p:growl id="growl" showDetail="true" life="4000" />
+                    <p:panel id="basic" header="Administración de Sectores" style="margin-bottom:20px">
+
+                       <h:panelGrid id="pngrid" columns="1" cellpadding="10">
+                           <p:commandButton styleClass="" 
+                                             value="Agregar Sector" icon="fa fa-plus" update="frmNuevo"
+                                             actionListener="#{crudSectoresController.agregarSector()}"
+                                             oncomplete="PF('modalNuevo').show();"/> 
+
+                           <p:dataTable id="dtgeneral" var="lis" value="#{crudSectoresController.lis_sector}" 
+                                         selectionMode="single" 
+                                         resizableColumns="true"
+                                         reflow="true"
+                                         rowKey="#{lis.codigo}" paginator="true" 
+                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rows="15" emptyMessage="No se encontraron registros."
+                                         currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                         rowsPerPageTemplate="5,10,15"
+                                         paginatorPosition="top">                    
+
+                                <p:column headerText="ID" width="3%" sortBy="#{lis.codigo}" filterBy="#{lis.codigo}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.codigo}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="Nombre" width="17%" sortBy="#{lis.nombre}" filterBy="#{lis.nombre}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.nombre}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="Descripción" width="8%" sortBy="#{lis.descripcion}" filterBy="#{lis.descripcion}" filterMatchMode="contains">
+                                    <h:outputText value="#{lis.descripcion}" style="float: right" />
+                                </p:column>
+
+                                <p:column headerText="ESTADO" width="5%" sortBy="#{lis.estado}">
+                                    <center>
+                                        <h:outputText value="#{lis.estado == 'A' ? 'ACTIVO':'INACTIVO'}" 
+                                                      style="#{lis.estado == 'A' ? 'color:darkgreen;':'color:red;'}"/>
+                                    </center>
+                                </p:column>
+
+                                <p:column headerText="Opciones:" width="9%">
+                                     <p:commandButton  icon="fa fa-edit" id="btnEditar"
+                                                       actionListener="#{crudSectoresController.setSector(lis)}"
+                                                      oncomplete="PF('windowsEditar').show();"
+                                                      update=":frmEditar"/> 
+                                    <p:tooltip id="toolEditar" for="btnEditar"  value="Editar" position="top"/>
+
+                                </p:column>
+
+
+
+                            </p:dataTable>
+
+                        </h:panelGrid>
+                    </p:panel>
+                </h:form>
+                
+                
+                 <p:dialog header="Nuevo Sector" widgetVar="modalNuevo" id="modalNuevo" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
+                          closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
+                    <h:form id="frmNuevo">
+                        <p:growl life="4000"  id="growl" showDetail="true" />
+                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank" >
+
+                            <p:outputLabel value="Nombre" for="txtNombre"/>
+                            <p:inputText id="txtNombre" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Nombre" autocomplete="off" value="#{crudSectoresController.sector.nombre}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Descripción" for="txtDescripcion"/>
+                            <p:inputText id="txtDescripcion" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Descripción" autocomplete="off" value="#{crudSectoresController.sector.descripcion}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Estado" for="cmbEstado"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{crudSectoresController.sector.estado}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="ACTIVO"   itemValue="A" />
+                                <f:selectItem itemLabel="INACTIVO" itemValue="I" />
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+                        <br/>
+
+                        <center>
+                            <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 40%"
+                                              actionListener="#{crudSectoresController.guardaSector(1)}" update=":frmSector:dtgeneral growl"/> 
+                        </center>
+
+                    </h:form>
+                </p:dialog>
+                
+                
+                <p:dialog header="Editar Sector" widgetVar="windowsEditar" id="windowsEditar" 
+                          appendTo="@(body)" responsive="true" 
+                          modal="true" width="70%" resizable="true" draggable="true" position="center,center" 
+                          closeOnEscape="true" style="background-color: white; opacity: 0.92 ; border: 7px solid #2399e5">
+                    <h:form id="frmEditar">
+                        <p:growl id="growl" life="4000" showDetail="true" />
+                        <p:panelGrid columns="4" layout="grid" styleClass="ui-panelgrid-blank">
+
+                            <p:outputLabel value="Codigo" for="txtCodigo"/>
+                            <p:inputText id="txtCodigo" required="true" requiredMessage="Campo obligatorio" readonly="true"
+                                         label="Codigo" autocomplete="off" value="#{crudSectoresController.sector.codigo}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Nombre" for="txtNombre"/>
+                            <p:inputText id="txtNombre" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Nombre" autocomplete="off" value="#{crudSectoresController.sector.nombre}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Descripción" for="txtDescripcion"/>
+                            <p:inputText id="txtDescripcion" required="true" requiredMessage="Campo obligatorio" 
+                                         label="Descripción" autocomplete="off" value="#{crudSectoresController.sector.descripcion}" 
+                                         style="width: 100%"/>
+
+                            <p:outputLabel value="Estado" for="cmbEstado"/>
+                            <p:selectOneMenu id="cmbEstado" value="#{crudSectoresController.sector.estado}" 
+                                             style="width: 90%" required="true" requiredMessage="Campo requerido" >
+                                <f:selectItem itemLabel="ACTIVO"   itemValue="A" />
+                                <f:selectItem itemLabel="INACTIVO" itemValue="I" />
+                            </p:selectOneMenu>
+
+                        </p:panelGrid>
+                        <br/>
+                        <center>
+                            <p:commandButton  icon="fa fa-save" value="Guardar" style="width: 50%"
+                                              actionListener="#{crudSectoresController.guardarEdicionSector()}" update=":frmSector:dtgeneral growl"/> 
+                        </center>
+                    </h:form>
+                </p:dialog>
+                
+                
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

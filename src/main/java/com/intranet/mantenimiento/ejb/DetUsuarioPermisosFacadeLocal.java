@@ -6,6 +6,7 @@
 package com.intranet.mantenimiento.ejb;
 
 import com.intranet.entity.DetUsuarioPermisos;
+import com.intranet.entity.Modulo;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -30,4 +31,5 @@ public interface DetUsuarioPermisosFacadeLocal {
 
     int count();
     
+   
 }

@@ -62,7 +62,7 @@ public class UsuarioFacade extends AbstractFacade<Usuario> implements UsuarioFac
         List<Usuario> usu = null;
         String consulta;
         try{
-            consulta = "SELECT u From Usuario u WHERE u.estado = ?1";
+            consulta = "SELECT u From Usuario u WHERE u.estado = ?1 ORDER BY u.apellido";
             Query query = em.createQuery(consulta);
             query.setParameter(1, "A");
             
@@ -74,5 +74,42 @@ public class UsuarioFacade extends AbstractFacade<Usuario> implements UsuarioFac
         return usu;
     }
     
+    
+    @Override
+    public void resetearClaveUsuario(String clave , int id){
+        try {
+            String consulta;
+            
+            consulta = "UPDATE Usuario u SET u.clave = ?1 WHERE u.id = ?2";
+            Query query = em.createQuery(consulta);
+            query.setParameter(1, clave);
+            query.setParameter(2, id);
+            System.out.println("Se actualizo la clave: " + query.executeUpdate());
+            
+        } catch (Exception e) {
+            System.out.println("Error resetenado clave de usuario: " + e.toString() + " ---- " + e.getMessage());
+            e.getStackTrace();
+        }
+    }
+    
+    @Override
+    public List<Usuario> findByUsuario(Usuario usuario) {
+    
+        em.flush();
+        List<Usuario> lista = null;
+        String consulta;
+        try{
+            consulta = "SELECT u From Usuario u WHERE u = ?1  and u.estado = ?2";
+            Query query = em.createQuery(consulta);
+            query.setParameter(1, usuario);
+            query.setParameter(2, "A");
+            
+            lista = query.getResultList();
+            
+        }catch(Exception e){
+            System.out.println("Error:" + e.toString());
+        }        
+        return lista;
+    }
     
 }

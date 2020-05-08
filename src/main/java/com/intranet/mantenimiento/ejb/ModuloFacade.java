@@ -6,6 +6,7 @@
 package com.intranet.mantenimiento.ejb;
 
 import com.intranet.entity.Modulo;
+import com.intranet.entity.Rol;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -42,10 +43,11 @@ public class ModuloFacade extends AbstractFacade<Modulo> implements ModuloFacade
             //where m.codigo=det.cod_modulo and det.cod_rol=r.id and r.id=1 
             consulta = "SELECT m From Modulo m, DetRolModulo det, Rol r  "
                     + " WHERE m.codigo = det.codModulo.codigo "
-                    + " and det.codRol.id = r.id and r.id  = ?1 and r.estado = ?2";
+                    + " and det.codRol.id = r.id and r.id  = ?1 and r.estado = ?2 and m.estado = ?3";
             Query query = em.createQuery(consulta);
             query.setParameter(1, codRolUsu);
             query.setParameter(2, "A");
+            query.setParameter(3, "A");
             lista_modulo = query.getResultList();
 
         } catch (Exception e) {
@@ -77,4 +79,42 @@ public class ModuloFacade extends AbstractFacade<Modulo> implements ModuloFacade
         return mod;
     }
 
+    @Override
+    public List<Modulo> findByAllActivos() {
+
+        List<Modulo> lista_modulo = null;
+        String consulta = "";
+        try {
+            consulta = "SELECT m From Modulo m WHERE m.estado = ?1";
+            Query query = em.createQuery(consulta);
+            query.setParameter(1, "A");
+            lista_modulo = query.getResultList();
+
+        } catch (Exception e) {
+            System.out.println("Error en facade modulo:" + e.toString());
+        }
+
+        return lista_modulo;
+
+    }
+    
+    
+    @Override
+    public void eliminarModulosPorModuloyRol(Modulo mod, Rol rol){
+        try {
+            String consulta;
+            
+            consulta = "DELETE FROM DetRolModulo det WHERE det.codRol = ?1 and det.codModulo = ?2";
+            Query query = em.createQuery(consulta);
+            query.setParameter(1, rol);
+            query.setParameter(2, mod);
+            System.out.println("Se borro modulo: " + query.executeUpdate());
+            
+        } catch (Exception e) {
+            System.out.println("Error eliminando modulos por modulo y rol: " + e.toString() + " ---- " + e.getMessage());
+            e.getStackTrace();
+        }
+    }
+    
+    
 }
