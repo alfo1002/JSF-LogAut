@@ -36,7 +36,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.4.1209</version>
+            <version>42.3.7</version>
         </dependency>
         <!-- https://docs.spring.io/spring-security/site/docs/5.1.4.RELEASE/api/org/springframework/security/crypto/bcrypt/BCrypt.html  --> 
         <dependency>
